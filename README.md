@@ -1,5 +1,5 @@
 # Banklist App
 
-[View Page](https://amrdesai.github.io/banklist-app/)
+[View Page](https://amrdesai.github.io/bankist-app/)
 
 ## About
