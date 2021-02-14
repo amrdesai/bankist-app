@@ -5,28 +5,28 @@
 // Data
 const account1 = {
     owner: 'Billu Billeshwar',
-    movements: [200, 450, -400, 3000, -650, -130, 70, 1300],
+    transactions: [200, 450, -400, 3000, -650, -130, 70, 1300],
     interestRate: 1.2, // %
     pin: 1111,
 };
 
 const account2 = {
     owner: 'Tillu Taylor',
-    movements: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
+    transactions: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
     interestRate: 1.5,
     pin: 2222,
 };
 
 const account3 = {
     owner: 'Gullu Gaitonde',
-    movements: [200, -200, 340, -300, -20, 50, 400, -460],
+    transactions: [200, -200, 340, -300, -20, 50, 400, -460],
     interestRate: 0.7,
     pin: 3333,
 };
 
 const account4 = {
     owner: 'Pappu Parik',
-    movements: [430, 1000, 700, 50, 90],
+    transactions: [430, 1000, 700, 50, 90],
     interestRate: 1,
     pin: 4444,
 };
@@ -43,7 +43,7 @@ const labelSumInterest = document.querySelector('.summary__value--interest');
 const labelTimer = document.querySelector('.timer');
 
 const containerApp = document.querySelector('.app');
-const containerMovements = document.querySelector('.movements');
+const containerTransactions = document.querySelector('.transactions');
 
 const btnLogin = document.querySelector('.login__btn');
 const btnTransfer = document.querySelector('.form__btn--transfer');
@@ -68,8 +68,8 @@ const inputClosePin = document.querySelector('.form__input--pin');
 // const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // Function: Display transactions to UI
-const displayMovements = (movements) => {
-    movements.forEach((currentItem, i) => {
+const displayTransactions = (transactions) => {
+    transactions.forEach((currentItem, i) => {
         const type = currentItem < 0 ? 'withdrawal' : 'deposit';
         const html = `
             <div class="movements__row">
@@ -79,7 +79,7 @@ const displayMovements = (movements) => {
             </div>
         `;
 
-        containerMovements.insertAdjacentHTML('afterbegin', html);
+        containerTransactions.insertAdjacentHTML('afterbegin', html);
     });
 };
 
@@ -94,8 +94,20 @@ const createUsername = (accounts) => {
     });
 };
 
+// Function: Filter deposits
+const deposits = transactions.filter((transaction) => transaction > 0);
+
+// Function: Filter withdrawls
+const withdrawls = transactions.filter((transaction) => transaction < 0);
+
+// Function: Calculate account balance & display to UI
+const accountBalance = (transactions) => {
+    const balance = transactions.reduce((acc, cur) => acc + cur, 0);
+    labelBalance.textContent = balance;
+};
+
 // Display transactions to UI
-displayMovements(account1.movements);
+displayTransactions(account1.transactions);
 
 // Create account usernames
 createUsername(accounts);
