@@ -67,6 +67,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 // const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
+// Function: Display transactions to UI
 const displayMovements = (movements) => {
     movements.forEach((currentItem, i) => {
         const type = currentItem < 0 ? 'withdrawal' : 'deposit';
@@ -82,4 +83,19 @@ const displayMovements = (movements) => {
     });
 };
 
+// Function: Create Username
+const createUsername = (accounts) => {
+    accounts.forEach((account) => {
+        account.username = account.owner
+            .toLowerCase()
+            .split(' ')
+            .map((name) => name[0])
+            .join('');
+    });
+};
+
+// Display transactions to UI
 displayMovements(account1.movements);
+
+// Create account usernames
+createUsername(accounts);
