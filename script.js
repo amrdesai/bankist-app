@@ -65,17 +65,17 @@ const inputClosePin = document.querySelector('.form__input--pin');
 //     ['GBP', 'Pound sterling'],
 // ]);
 
-// const movements = [200, 450, -400, 3000, -650, -130, 70, 1300];
+// const transactions = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // Function: Display transactions to UI
 const displayTransactions = (transactions) => {
     transactions.forEach((currentItem, i) => {
         const type = currentItem < 0 ? 'withdrawal' : 'deposit';
         const html = `
-            <div class="movements__row">
-                <div class="movements__type movements__type--${type}">${i} ${type}</div>
-                <div class="movements__date">3 days ago</div>
-                <div class="movements__value">${currentItem}€</div>
+            <div class="transactions__row">
+                <div class="transactions__type transactions__type--${type}">${i} ${type}</div>
+                <div class="transactions__date">3 days ago</div>
+                <div class="transactions__value">${currentItem}€</div>
             </div>
         `;
 
@@ -95,19 +95,24 @@ const createUsername = (accounts) => {
 };
 
 // Function: Filter deposits
-const deposits = transactions.filter((transaction) => transaction > 0);
+const deposits = (transactions) =>
+    transactions.filter((transaction) => transaction > 0);
 
 // Function: Filter withdrawls
-const withdrawls = transactions.filter((transaction) => transaction < 0);
+const withdrawls = (transactions) =>
+    transactions.filter((transaction) => transaction < 0);
 
 // Function: Calculate account balance & display to UI
-const accountBalance = (transactions) => {
+const displayAccountBalance = (transactions) => {
     const balance = transactions.reduce((acc, cur) => acc + cur, 0);
-    labelBalance.textContent = balance;
+    labelBalance.textContent = `CAD $${balance}`;
 };
+
+// Create account usernames
+createUsername(accounts);
 
 // Display transactions to UI
 displayTransactions(account1.transactions);
 
-// Create account usernames
-createUsername(accounts);
+// Display account balance to UI
+displayAccountBalance(account1.transactions);
