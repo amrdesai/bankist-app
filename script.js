@@ -234,3 +234,28 @@ btnClose.addEventListener('click', (e) => {
     inputClosePin.value = '';
     inputClosePin.blur(); // removes focus
 });
+
+// Event Listener: Loan Btn
+btnLoan.addEventListener('click', (e) => {
+    e.preventDefault();
+    const loanReqAmt = Number(inputLoanAmount.value);
+
+    if (
+        loanReqAmt > 0 &&
+        // loan gets approved, if user has 1 transaction equal or greater than 10% of requested amount
+        currentAccount.transactions.some(
+            (transaction) => transaction >= loanReqAmt * 0.1
+        )
+    ) {
+        // add amount to transactions
+        currentAccount.transactions.push(loanReqAmt);
+        // update UI
+        updateUI(currentAccount);
+    } else {
+        console.log('Loan amount too high!');
+    }
+
+    // Clear input
+    inputLoanAmount.value = '';
+    inputLoanAmount.blur();
+});
