@@ -67,6 +67,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 const transactions = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
+// FUNCTIONS //
 // Function: Display transactions to UI
 const displayTransactions = (transactions) => {
     transactions.forEach((currentItem, i) => {
@@ -84,7 +85,8 @@ const displayTransactions = (transactions) => {
 };
 
 // Function: Calculate summary and display to UI
-const calcDisplaySummary = (transactions) => {
+const calcDisplaySummary = (account) => {
+    const { transactions, interestRate } = account;
     // incoming transactions
     const incomes = transactions
         .filter((transaction) => transaction > 0)
@@ -100,7 +102,7 @@ const calcDisplaySummary = (transactions) => {
     // imaginary interest
     const interest = transactions
         .filter((transaction) => transaction > 0)
-        .map((deposit) => deposit * (1.2 / 100))
+        .map((deposit) => deposit * (interestRate / 100))
         .filter((int) => int >= 1)
         .reduce((acc, cur) => acc + cur, 0);
     labelSumInterest.textContent = `${interest.toFixed(2)}€`;
@@ -134,9 +136,37 @@ const displayAccountBalance = (transactions) => {
 // Create account usernames
 createUsername(accounts);
 
-// Display transactions to UI
-displayTransactions(account1.transactions);
-calcDisplaySummary(account1.transactions);
+// EVENT LISTENERS //
+// Event Listener: Login button
+let currentAccount;
+btnLogin.addEventListener('click', (e) => {
+    // Prevent form from subbmitting
+    e.preventDefault();
+    currentAccount = accounts.find(
+        (acc) => acc.username === inputLoginUsername.value
+    );
 
-// Display account balance to UI
-displayAccountBalance(account1.transactions);
+    if (currentAccount?.pin === Number(inputLoginPin.value)) {
+        // Display UI & welcome message
+        labelWelcome.textContent = `Welcome back, ${
+            currentAccount.owner.split(' ')[0]
+        }`;
+        containerApp.style.opacity = 100;
+
+        // Clear input fields
+        inputLoginUsername.value = '';
+        inputLoginPin.value = '';
+        inputLoginPin.blur(); // removes focus
+
+        // Display transactions
+        displayTransactions(currentAccount.transactions);
+
+        // Display balance
+        displayAccountBalance(currentAccount.transactions);
+
+        // Display summary
+        calcDisplaySummary(currentAccount);
+    } else {
+        console.log('Incorrect credentials');
+    }
+});
