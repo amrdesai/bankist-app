@@ -149,6 +149,16 @@ const updateUI = (account) => {
 // Create account usernames
 createUsername(accounts);
 
+// Get all transactions in all accounts usning flat method
+const overallBalance = accounts
+    .map((acc) => acc.transactions)
+    .flat()
+    .reduce((acc, cur) => acc + cur, 0);
+// Get all transactions in all accounts usning flatMap method
+const overallBalance2 = accounts
+    .flatMap((acc) => acc.transactions)
+    .reduce((acc, cur) => acc + cur, 0);
+
 // EVENT LISTENERS //
 // Event Listener: Login button
 let currentAccount;
