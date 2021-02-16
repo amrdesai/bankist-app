@@ -192,7 +192,7 @@ btnTransfer.addEventListener('click', (e) => {
     inputTransferAmount.value = '';
     inputTransferAmount.blur();
 
-    // Check if account has ennough money to transfer
+    // Check if account has enough money to transfer
     if (
         amount > 0 &&
         receiverAcc &&
@@ -207,4 +207,30 @@ btnTransfer.addEventListener('click', (e) => {
     } else {
         console.log('Error, something went wrong!');
     }
+});
+
+// Event Listener: Close account button
+btnClose.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Check if user entered correct credentaials
+    if (
+        inputCloseUsername.value === currentAccount.username &&
+        Number(inputClosePin.value) === currentAccount.pin
+    ) {
+        // find the index of currentAccount
+        const index = accounts.findIndex(
+            (acc) => acc.username === currentAccount.username
+        );
+        // remove currentAccount from accounts arr
+        accounts.splice(index, 1);
+        // hide UI
+        containerApp.style.opacity = 0;
+    } else {
+        console.log('Incorrect credentials!');
+    }
+
+    // Clear input fields
+    inputCloseUsername.value = '';
+    inputClosePin.value = '';
+    inputClosePin.blur(); // removes focus
 });
