@@ -128,9 +128,22 @@ const withdrawls = (transactions) =>
     transactions.filter((transaction) => transaction < 0);
 
 // Function: Calculate account balance & display to UI
-const displayAccountBalance = (transactions) => {
-    const balance = transactions.reduce((acc, cur) => acc + cur, 0);
-    labelBalance.textContent = `${balance}€`;
+const displayAccountBalance = (account) => {
+    const { transactions } = account;
+    account.balance = transactions.reduce((acc, cur) => acc + cur, 0);
+    labelBalance.textContent = `${account.balance}€`;
+};
+
+// FUnction: Update UI
+const updateUI = (account) => {
+    // Display transactions
+    displayTransactions(account.transactions);
+
+    // Display balance
+    displayAccountBalance(account);
+
+    // Display summary
+    calcDisplaySummary(account);
 };
 
 // Create account usernames
@@ -158,15 +171,40 @@ btnLogin.addEventListener('click', (e) => {
         inputLoginPin.value = '';
         inputLoginPin.blur(); // removes focus
 
-        // Display transactions
-        displayTransactions(currentAccount.transactions);
-
-        // Display balance
-        displayAccountBalance(currentAccount.transactions);
-
-        // Display summary
-        calcDisplaySummary(currentAccount);
+        // Update UI
+        updateUI(currentAccount);
     } else {
         console.log('Incorrect credentials');
+    }
+});
+
+// Event Listener: Transfer money
+btnTransfer.addEventListener('click', (e) => {
+    e.preventDefault();
+    const amount = Number(inputTransferAmount.value);
+    const receiver = inputTransferTo.value;
+    const receiverAcc = accounts.find(
+        (account) => account.username === receiver
+    );
+
+    // clear inputs
+    inputTransferTo.value = '';
+    inputTransferAmount.value = '';
+    inputTransferAmount.blur();
+
+    // Check if account has ennough money to transfer
+    if (
+        amount > 0 &&
+        receiverAcc &&
+        currentAccount.balance >= amount &&
+        receiverAcc?.username !== currentAccount.username
+    ) {
+        // create transaction
+        currentAccount.transactions.push(-amount);
+        receiverAcc.transactions.push(amount);
+        // update UI
+        updateUI(currentAccount);
+    } else {
+        console.log('Error, something went wrong!');
     }
 });
