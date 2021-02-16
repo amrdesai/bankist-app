@@ -65,7 +65,7 @@ const inputClosePin = document.querySelector('.form__input--pin');
 //     ['GBP', 'Pound sterling'],
 // ]);
 
-// const transactions = [200, 450, -400, 3000, -650, -130, 70, 1300];
+const transactions = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // Function: Display transactions to UI
 const displayTransactions = (transactions) => {
@@ -81,6 +81,29 @@ const displayTransactions = (transactions) => {
 
         containerTransactions.insertAdjacentHTML('afterbegin', html);
     });
+};
+
+// Function: Calculate summary and display to UI
+const calcDisplaySummary = (transactions) => {
+    // incoming transactions
+    const incomes = transactions
+        .filter((transaction) => transaction > 0)
+        .reduce((acc, cur) => acc + cur, 0);
+    labelSumIn.textContent = `${incomes}€`;
+
+    // outgoing transactions
+    const expenses = transactions
+        .filter((transaction) => transaction < 0)
+        .reduce((acc, cur) => acc + cur, 0);
+    labelSumOut.textContent = `${Math.abs(expenses)}€`;
+
+    // imaginary interest
+    const interest = transactions
+        .filter((transaction) => transaction > 0)
+        .map((deposit) => deposit * (1.2 / 100))
+        .filter((int) => int >= 1)
+        .reduce((acc, cur) => acc + cur, 0);
+    labelSumInterest.textContent = `${interest.toFixed(2)}€`;
 };
 
 // Function: Create Username
@@ -105,7 +128,7 @@ const withdrawls = (transactions) =>
 // Function: Calculate account balance & display to UI
 const displayAccountBalance = (transactions) => {
     const balance = transactions.reduce((acc, cur) => acc + cur, 0);
-    labelBalance.textContent = `CAD $${balance}`;
+    labelBalance.textContent = `${balance}€`;
 };
 
 // Create account usernames
@@ -113,6 +136,7 @@ createUsername(accounts);
 
 // Display transactions to UI
 displayTransactions(account1.transactions);
+calcDisplaySummary(account1.transactions);
 
 // Display account balance to UI
 displayAccountBalance(account1.transactions);
