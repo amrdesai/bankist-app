@@ -69,8 +69,15 @@ const transactions = [200, 450, -400, 3000, -650, -130, 70, 1300];
 
 // FUNCTIONS //
 // Function: Display transactions to UI
-const displayTransactions = (transactions) => {
-    transactions.forEach((currentItem, i) => {
+const displayTransactions = (transactions, sort = false) => {
+    containerTransactions.innerHTML = '';
+
+    //
+    const txns = sort
+        ? transactions.slice().sort((a, b) => a - b)
+        : transactions;
+
+    txns.forEach((currentItem, i) => {
         const type = currentItem < 0 ? 'withdrawal' : 'deposit';
         const html = `
             <div class="transactions__row">
@@ -268,4 +275,11 @@ btnLoan.addEventListener('click', (e) => {
     // Clear input
     inputLoanAmount.value = '';
     inputLoanAmount.blur();
+});
+
+// Event Listener: Sort button
+let sorted = false;
+btnSort.addEventListener('click', () => {
+    displayTransactions(currentAccount.transactions, !sorted);
+    sorted = !sorted;
 });
