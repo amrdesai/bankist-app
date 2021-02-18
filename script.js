@@ -5,7 +5,7 @@
 // Data
 const account1 = {
     owner: 'Billu Billeshwar',
-    transactions: [200, 450, -400, 3000, -650, -130, 70, 1300],
+    transactions: [200, 455.23, -306.5, 2500, -642.21, -133.9, 79.97, 1300],
     interestRate: 1.2, // %
     pin: 1111,
     transactionsDates: [
@@ -120,7 +120,9 @@ const displayTransactions = (transactions, sort = false) => {
             <div class="transactions__row">
                 <div class="transactions__type transactions__type--${type}">${i} ${type}</div>
                 <div class="transactions__date">3 days ago</div>
-                <div class="transactions__value">${currentItem}€</div>
+                <div class="transactions__value">${currentItem.toFixed(
+                    2
+                )}€</div>
             </div>
         `;
 
@@ -135,13 +137,13 @@ const calcDisplaySummary = (account) => {
     const incomes = transactions
         .filter((transaction) => transaction > 0)
         .reduce((acc, cur) => acc + cur, 0);
-    labelSumIn.textContent = `${incomes}€`;
+    labelSumIn.textContent = `${incomes.toFixed(2)}€`;
 
     // outgoing transactions
     const expenses = transactions
         .filter((transaction) => transaction < 0)
         .reduce((acc, cur) => acc + cur, 0);
-    labelSumOut.textContent = `${Math.abs(expenses)}€`;
+    labelSumOut.textContent = `${Math.abs(expenses.toFixed(2))}€`;
 
     // imaginary interest
     const interest = transactions
@@ -175,7 +177,7 @@ const withdrawls = (transactions) =>
 const displayAccountBalance = (account) => {
     const { transactions } = account;
     account.balance = transactions.reduce((acc, cur) => acc + cur, 0);
-    labelBalance.textContent = `${account.balance}€`;
+    labelBalance.textContent = `${account.balance.toFixed(2)}€`;
 };
 
 // FUnction: Update UI
@@ -292,7 +294,7 @@ btnClose.addEventListener('click', (e) => {
 // Event Listener: Loan Btn
 btnLoan.addEventListener('click', (e) => {
     e.preventDefault();
-    const loanReqAmt = Number(inputLoanAmount.value);
+    const loanReqAmt = Math.floor(inputLoanAmount.value);
 
     if (
         loanReqAmt > 0 &&
