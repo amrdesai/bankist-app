@@ -8,7 +8,7 @@ const account1 = {
     transactions: [200, 455.23, -306.5, 2500, -642.21, -133.9, 79.97, 1300],
     interestRate: 1.2, // %
     pin: 1111,
-    transactionsDates: [
+    transactionDates: [
         '2019-11-18T21:31:17.178Z',
         '2019-12-23T07:42:02.383Z',
         '2020-01-28T09:15:04.904Z',
@@ -27,7 +27,7 @@ const account2 = {
     transactions: [5000, 3400, -150, -790, -3210, -1000, 8500, -30],
     interestRate: 1.5,
     pin: 2222,
-    transactionsDates: [
+    transactionDates: [
         '2019-11-01T13:15:33.035Z',
         '2019-11-30T09:48:16.867Z',
         '2019-12-25T06:04:23.907Z',
@@ -46,7 +46,7 @@ const account3 = {
     transactions: [200, -200, 340, -300, -20, 50, 400, -460],
     interestRate: 0.7,
     pin: 3333,
-    transactionsDates: [
+    transactionDates: [
         '2019-11-18T21:31:17.178Z',
         '2019-12-23T07:42:02.383Z',
         '2020-01-28T09:15:04.904Z',
@@ -65,7 +65,7 @@ const account4 = {
     transactions: [430, 1000, 700, 50, 90],
     interestRate: 1,
     pin: 4444,
-    transactionsDates: [
+    transactionDates: [
         '2019-11-01T13:15:33.035Z',
         '2019-11-30T09:48:16.867Z',
         '2019-12-25T06:04:23.907Z',
@@ -106,20 +106,28 @@ const inputClosePin = document.querySelector('.form__input--pin');
 
 // FUNCTIONS //
 // Function: Display transactions to UI
-const displayTransactions = (transactions, sort = false) => {
+const displayTransactions = (account, sort = false) => {
     containerTransactions.innerHTML = '';
 
     //
     const txns = sort
-        ? transactions.slice().sort((a, b) => a - b)
-        : transactions;
+        ? account.transactions.slice().sort((a, b) => a - b)
+        : account.transactions;
 
     txns.forEach((currentItem, i) => {
         const type = currentItem < 0 ? 'withdrawal' : 'deposit';
+
+        // Generate Date
+        const date = new Date(account.transactionDates[i]);
+        const day = `${date.getDate()}`.padStart(2, '0');
+        const month = `${date.getMonth() + 1}`.padStart(2, '0');
+        const year = date.getFullYear();
+        const displayDate = `${day}/${month}/${year}`;
+
         const html = `
             <div class="transactions__row">
                 <div class="transactions__type transactions__type--${type}">${i} ${type}</div>
-                <div class="transactions__date">3 days ago</div>
+                <div class="transactions__date">${displayDate}</div>
                 <div class="transactions__value">${currentItem.toFixed(
                     2
                 )}€</div>
@@ -183,7 +191,7 @@ const displayAccountBalance = (account) => {
 // FUnction: Update UI
 const updateUI = (account) => {
     // Display transactions
-    displayTransactions(account.transactions);
+    displayTransactions(account);
 
     // Display balance
     displayAccountBalance(account);
@@ -227,6 +235,15 @@ btnLogin.addEventListener('click', (e) => {
         inputLoginPin.value = '';
         inputLoginPin.blur(); // removes focus
 
+        // Display Date
+        const now = new Date();
+        const day = `${now.getDate()}`.padStart(2, '0');
+        const month = `${now.getMonth() + 1}`.padStart(2, '0');
+        const year = now.getFullYear();
+        const hour = `${now.getHours()}`.padStart(2, '0');
+        const min = `${now.getMinutes()}`.padStart(2, '0');
+        labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+
         // Update UI
         updateUI(currentAccount);
     } else {
@@ -258,6 +275,9 @@ btnTransfer.addEventListener('click', (e) => {
         // create transaction
         currentAccount.transactions.push(-amount);
         receiverAcc.transactions.push(amount);
+        // Add transaction date
+        currentAccount.transactionDates.push(new Date().toISOString());
+        receiverAcc.transactionDates.push(new Date().toISOString());
         // update UI
         updateUI(currentAccount);
     } else {
@@ -305,6 +325,8 @@ btnLoan.addEventListener('click', (e) => {
     ) {
         // add amount to transactions
         currentAccount.transactions.push(loanReqAmt);
+        // add transaction date
+        currentAccount.transactionDates.push(new Date().toISOString());
         // update UI
         updateUI(currentAccount);
     } else {
@@ -319,6 +341,6 @@ btnLoan.addEventListener('click', (e) => {
 // Event Listener: Sort button
 let sorted = false;
 btnSort.addEventListener('click', () => {
-    displayTransactions(currentAccount.transactions, !sorted);
+    displayTransactions(currentAccount, !sorted);
     sorted = !sorted;
 });
