@@ -37,8 +37,8 @@ const account2 = {
         '2020-06-25T18:49:59.371Z',
         '2020-07-26T12:01:20.894Z',
     ],
-    currency: 'USD',
-    locale: 'en-US',
+    currency: 'EUR',
+    locale: 'en-UK',
 };
 
 const account3 = {
@@ -115,15 +115,19 @@ const displayTransactions = (account, sort = false) => {
     txns.forEach((currentItem, i) => {
         const type = currentItem < 0 ? 'withdrawal' : 'deposit';
         const date = new Date(account.transactionDates[i]);
-        // generate date
+        // date
         const displayDate = formatTxnDate(date, account.locale);
+        // transaction amount
+        const txnAmt = formatCurrency(
+            currentItem,
+            account.locale,
+            account.currency
+        );
         const html = `
             <div class="transactions__row">
                 <div class="transactions__type transactions__type--${type}">${i} ${type}</div>
                 <div class="transactions__date">${displayDate}</div>
-                <div class="transactions__value">${currentItem.toFixed(
-                    2
-                )}€</div>
+                <div class="transactions__value">${txnAmt}</div>
             </div>
         `;
 
@@ -138,13 +142,21 @@ const calcDisplaySummary = (account) => {
     const incomes = transactions
         .filter((transaction) => transaction > 0)
         .reduce((acc, cur) => acc + cur, 0);
-    labelSumIn.textContent = `${incomes.toFixed(2)}€`;
+    labelSumIn.textContent = formatCurrency(
+        incomes,
+        account.locale,
+        account.currency
+    );
 
     // outgoing transactions
     const expenses = transactions
         .filter((transaction) => transaction < 0)
         .reduce((acc, cur) => acc + cur, 0);
-    labelSumOut.textContent = `${Math.abs(expenses.toFixed(2))}€`;
+    labelSumOut.textContent = formatCurrency(
+        Math.abs(expenses),
+        account.locale,
+        account.currency
+    );
 
     // imaginary interest
     const interest = transactions
@@ -152,7 +164,11 @@ const calcDisplaySummary = (account) => {
         .map((deposit) => deposit * (interestRate / 100))
         .filter((int) => int >= 1)
         .reduce((acc, cur) => acc + cur, 0);
-    labelSumInterest.textContent = `${interest.toFixed(2)}€`;
+    labelSumInterest.textContent = formatCurrency(
+        interest,
+        account.locale,
+        account.currency
+    );
 };
 
 // Function: Create Username
@@ -170,7 +186,10 @@ const createUsername = (accounts) => {
 const displayAccountBalance = (account) => {
     const { transactions } = account;
     account.balance = transactions.reduce((acc, cur) => acc + cur, 0);
-    labelBalance.textContent = `${account.balance.toFixed(2)}€`;
+    labelBalance.textContent = new Intl.NumberFormat(account.locale, {
+        style: 'currency',
+        currency: account.currency,
+    }).format(account.balance);
 };
 
 // Function: Update UI
@@ -183,7 +202,7 @@ const updateUI = (account) => {
     calcDisplaySummary(account);
 };
 
-// Function:
+// Function: Format transaction date
 const formatTxnDate = (date, locale) => {
     const calcDaysPassed = (date1, date2) =>
         Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
@@ -203,6 +222,14 @@ const formatTxnDate = (date, locale) => {
         date
     );
     return formattedDate;
+};
+
+// Function: Format currency format
+const formatCurrency = (amount, locale, currency) => {
+    return new Intl.NumberFormat(locale, {
+        style: 'currency',
+        currency,
+    }).format(amount);
 };
 
 // Create account usernames
