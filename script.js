@@ -15,11 +15,11 @@ const account1 = {
         '2020-05-27T17:01:17.194Z',
         '2020-07-11T23:36:17.929Z',
         '2020-07-12T10:51:36.790Z',
-        '2021-02-18T21:31:17.178Z',
-        '2021-02-23T07:42:02.383Z',
+        '2021-02-23T21:31:17.178Z',
+        '2021-02-19T07:42:02.383Z',
     ],
-    currency: 'EUR',
-    locale: 'pt-PT',
+    currency: 'CAD',
+    locale: 'en-CA',
 };
 
 const account2 = {
@@ -57,7 +57,7 @@ const account3 = {
         '2020-07-12T10:51:36.790Z',
     ],
     currency: 'EUR',
-    locale: 'pt-PT',
+    locale: 'en-UK',
 };
 
 const account4 = {
@@ -72,37 +72,37 @@ const account4 = {
         '2020-01-25T14:18:46.235Z',
         '2020-02-05T16:33:06.386Z',
     ],
-    currency: 'USD',
-    locale: 'en-US',
+    currency: 'INR',
+    locale: 'in-HI',
 };
 
 const accounts = [account1, account2, account3, account4];
 
 // Elements
-const labelWelcome = document.querySelector('.welcome');
-const labelDate = document.querySelector('.date');
-const labelBalance = document.querySelector('.balance__value');
-const labelSumIn = document.querySelector('.summary__value--in');
-const labelSumOut = document.querySelector('.summary__value--out');
-const labelSumInterest = document.querySelector('.summary__value--interest');
-const labelTimer = document.querySelector('.timer');
+const labelWelcome = document.querySelector('.welcome'),
+    labelDate = document.querySelector('.date'),
+    labelBalance = document.querySelector('.balance__value'),
+    labelSumIn = document.querySelector('.summary__value--in'),
+    labelSumOut = document.querySelector('.summary__value--out'),
+    labelSumInterest = document.querySelector('.summary__value--interest'),
+    labelTimer = document.querySelector('.timer');
 
-const containerApp = document.querySelector('.app');
-const containerTransactions = document.querySelector('.transactions');
+const containerApp = document.querySelector('.app'),
+    containerTransactions = document.querySelector('.transactions');
 
-const btnLogin = document.querySelector('.login__btn');
-const btnTransfer = document.querySelector('.form__btn--transfer');
-const btnLoan = document.querySelector('.form__btn--loan');
-const btnClose = document.querySelector('.form__btn--close');
-const btnSort = document.querySelector('.btn--sort');
+const btnLogin = document.querySelector('.login__btn'),
+    btnTransfer = document.querySelector('.form__btn--transfer'),
+    btnLoan = document.querySelector('.form__btn--loan'),
+    btnClose = document.querySelector('.form__btn--close'),
+    btnSort = document.querySelector('.btn--sort');
 
-const inputLoginUsername = document.querySelector('.login__input--user');
-const inputLoginPin = document.querySelector('.login__input--pin');
-const inputTransferTo = document.querySelector('.form__input--to');
-const inputTransferAmount = document.querySelector('.form__input--amount');
-const inputLoanAmount = document.querySelector('.form__input--loan-amount');
-const inputCloseUsername = document.querySelector('.form__input--user');
-const inputClosePin = document.querySelector('.form__input--pin');
+const inputLoginUsername = document.querySelector('.login__input--user'),
+    inputLoginPin = document.querySelector('.login__input--pin'),
+    inputTransferTo = document.querySelector('.form__input--to'),
+    inputTransferAmount = document.querySelector('.form__input--amount'),
+    inputLoanAmount = document.querySelector('.form__input--loan-amount'),
+    inputCloseUsername = document.querySelector('.form__input--user'),
+    inputClosePin = document.querySelector('.form__input--pin');
 
 // FUNCTIONS //
 // Function: Display transactions to UI
@@ -116,7 +116,7 @@ const displayTransactions = (account, sort = false) => {
         const type = currentItem < 0 ? 'withdrawal' : 'deposit';
         const date = new Date(account.transactionDates[i]);
         // generate date
-        const displayDate = formatTxnDate(date);
+        const displayDate = formatTxnDate(date, account.locale);
         const html = `
             <div class="transactions__row">
                 <div class="transactions__type transactions__type--${type}">${i} ${type}</div>
@@ -184,21 +184,25 @@ const updateUI = (account) => {
 };
 
 // Function:
-const formatTxnDate = (date) => {
+const formatTxnDate = (date, locale) => {
     const calcDaysPassed = (date1, date2) =>
         Math.round(Math.abs(date2 - date1) / (1000 * 60 * 60 * 24));
     const daysPassed = calcDaysPassed(new Date(), date);
-
-    // Return statements under 7days
+    // return statements under 7days
     if (daysPassed === 0) return 'Today';
     if (daysPassed === 1) return 'Yesderday';
     if (daysPassed <= 7) return `${daysPassed} days ago`;
-
-    // Return date if 7+days
-    const day = `${date.getDate()}`.padStart(2, '0');
-    const month = `${date.getMonth() + 1}`.padStart(2, '0');
-    const year = date.getFullYear();
-    return `${day}/${month}/${year}`;
+    // return date if 7+days using Internationalize API
+    const dateOptions = {
+        day: 'numeric',
+        month: 'short',
+        // year: '2-digit',
+        year: 'numeric',
+    };
+    const formattedDate = new Intl.DateTimeFormat(locale, dateOptions).format(
+        date
+    );
+    return formattedDate;
 };
 
 // Create account usernames
@@ -238,12 +242,18 @@ btnLogin.addEventListener('click', (e) => {
 
         // Display Date
         const now = new Date();
-        const day = `${now.getDate()}`.padStart(2, '0');
-        const month = `${now.getMonth() + 1}`.padStart(2, '0');
-        const year = now.getFullYear();
-        const hour = `${now.getHours()}`.padStart(2, '0');
-        const min = `${now.getMinutes()}`.padStart(2, '0');
-        labelDate.textContent = `${day}/${month}/${year}, ${hour}:${min}`;
+        const locale = currentAccount.locale;
+        const options = {
+            hour: 'numeric',
+            minute: 'numeric',
+            day: 'numeric',
+            month: 'long',
+            year: 'numeric',
+            weekday: 'long',
+        };
+        labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(
+            now
+        );
 
         // Update UI
         updateUI(currentAccount);
