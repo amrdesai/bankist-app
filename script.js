@@ -104,7 +104,9 @@ const inputLoginUsername = document.querySelector('.login__input--user'),
     inputCloseUsername = document.querySelector('.form__input--user'),
     inputClosePin = document.querySelector('.form__input--pin');
 
-// FUNCTIONS //
+// ------------------------------------
+// // // // FUNCTIONS // // // //
+// ------------------------------------
 // Function: Display transactions to UI
 const displayTransactions = (account, sort = false) => {
     containerTransactions.innerHTML = '';
@@ -213,9 +215,8 @@ const formatTxnDate = (date, locale) => {
     if (daysPassed <= 7) return `${daysPassed} days ago`;
     // return date if 7+days using Internationalize API
     const dateOptions = {
-        day: 'numeric',
+        day: '2-digit',
         month: 'short',
-        // year: '2-digit',
         year: 'numeric',
     };
     const formattedDate = new Intl.DateTimeFormat(locale, dateOptions).format(
@@ -232,6 +233,31 @@ const formatCurrency = (amount, locale, currency) => {
     }).format(amount);
 };
 
+// Function: Start logout timer
+const startLogOutTimer = () => {
+    const tick = () => {
+        // Calculate minutes
+        const min = `${Math.trunc(time / 60)}`.padStart(2, 0);
+        const sec = `${time % 60}`.padStart(2, 0);
+        // In each call, display remaining time to UI
+        labelTimer.textContent = `${min}:${sec}`;
+        // On 0 seconds, stop time timer & logout user
+        if (time === 0) {
+            clearInterval(timer);
+            labelWelcome.textContent = 'Log in to get started';
+            containerApp.style.opacity = 0;
+        }
+        // decrease 1 second
+        time--;
+    };
+    // Set time to 5 minutes
+    let time = 300;
+    // call the timer every second
+    tick();
+    const timer = setInterval(() => tick(), 1000);
+    return timer;
+};
+
 // Create account usernames
 createUsername(accounts);
 
@@ -245,9 +271,12 @@ const overallBalance2 = accounts
     .flatMap((acc) => acc.transactions)
     .reduce((acc, cur) => acc + cur, 0);
 
-// EVENT LISTENERS //
+// ------------------------------------
+// // // // EVENT LISTENERS // // // //
+// ------------------------------------
+// State variables
+let currentAccount, timer;
 // Event Listener: Login button
-let currentAccount;
 btnLogin.addEventListener('click', (e) => {
     // Prevent form from subbmitting
     e.preventDefault();
@@ -271,8 +300,8 @@ btnLogin.addEventListener('click', (e) => {
         const now = new Date();
         const locale = currentAccount.locale;
         const options = {
-            hour: 'numeric',
-            minute: 'numeric',
+            // hour: 'numeric',
+            // minute: 'numeric',
             day: 'numeric',
             month: 'long',
             year: 'numeric',
@@ -281,6 +310,10 @@ btnLogin.addEventListener('click', (e) => {
         labelDate.textContent = new Intl.DateTimeFormat(locale, options).format(
             now
         );
+
+        // Start logout timer
+        if (timer) clearInterval(timer);
+        timer = startLogOutTimer();
 
         // Update UI
         updateUI(currentAccount);
@@ -318,6 +351,9 @@ btnTransfer.addEventListener('click', (e) => {
         receiverAcc.transactionDates.push(new Date().toISOString());
         // update UI
         updateUI(currentAccount);
+        // Reset timer
+        clearInterval(timer);
+        timer = startLogOutTimer();
     } else {
         console.log('Error, something went wrong!');
     }
@@ -377,6 +413,9 @@ btnLoan.addEventListener('click', (e) => {
     // Clear input
     inputLoanAmount.value = '';
     inputLoanAmount.blur();
+    // Reset timer
+    clearInterval(timer);
+    timer = startLogOutTimer();
 });
 
 // Event Listener: Sort button
