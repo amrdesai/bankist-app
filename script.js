@@ -361,12 +361,15 @@ btnLoan.addEventListener('click', (e) => {
             (transaction) => transaction >= loanReqAmt * 0.1
         )
     ) {
-        // add amount to transactions
-        currentAccount.transactions.push(loanReqAmt);
-        // add transaction date
-        currentAccount.transactionDates.push(new Date().toISOString());
-        // update UI
-        updateUI(currentAccount);
+        // setTimeout to simulate loan processing
+        setTimeout(() => {
+            // add amount to transactions
+            currentAccount.transactions.push(loanReqAmt);
+            // add transaction date
+            currentAccount.transactionDates.push(new Date().toISOString());
+            // update UI
+            updateUI(currentAccount);
+        }, 3000);
     } else {
         console.log('Loan amount too high!');
     }
