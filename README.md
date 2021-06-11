@@ -4,5 +4,4 @@
 
 ## About
 -   Displays user transactions (Deposits & Withdrawls)
--   User can transfer money to another user & request for loan
--  
+-   User can transfer money to another user & request for loan  
